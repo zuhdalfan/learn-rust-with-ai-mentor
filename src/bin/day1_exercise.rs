@@ -1,45 +1,45 @@
-use std::io::{self, Read, Write};
-fn main() {
-    // read 2 int from stdin (same line, space-separated)
-    // print their sum, diff, product
-    // if input parsing fails, print a friendly error message and exit
+use std::io::{self, Read, Write}; // bring in stdin/stdout helpers and Read/Write traits
 
-    let mut input = String::new();
+fn main() { // program entry point
+    // Goal: read two integers from stdin and print sum/diff/product. // simple high-level goal
+    // If parsing fails, print a friendly error and exit. // error handling expectation
 
-    eprintln!("Enter two numbers (CTRL+D when done):");
-    if io::stdin().read_to_string(&mut input).is_err() {
-        eprintln!("Failed to read input");
-        return;
-    }else {
-        eprintln!("\nInput: {}", input);
-    }
+    let mut input = String::new(); // reusable buffer to hold input text
 
-    eprintln!("Re-enter two numbers (ENTER when done):");
-    let _=io::stdout().flush();
+    eprintln!("Enter two numbers (CTRL+D when done):"); // prompt for first read (EOF-terminated)
+    if io::stdin().read_to_string(&mut input).is_err() { // read all stdin into input
+        eprintln!("Failed to read input"); // error message if reading fails
+        return; // stop program early
+    } else { // success branch
+        eprintln!("\nInput: {}", input); // echo back what was read
+    } // end of read_to_string handling
 
-    input.clear();
-    if io::stdin().read_line(&mut input).is_err() {
-        eprintln!("Failed to read input");
-        return;
-    }else {
-        eprintln!("\nInput: {}", input);
-    }
+    eprintln!("Re-enter two numbers (ENTER when done):"); // prompt for a single line
+    let _ = io::stdout().flush(); // flush the prompt so it shows before waiting
 
-    let mut parts = input.split_whitespace();
-    let a = match parts.next().and_then(|s| s.parse::<i64>().ok()){
-        Some(a) => a,
-        None => return,
-    };
+    input.clear(); // empty the buffer so we can reuse it
+    if io::stdin().read_line(&mut input).is_err() { // read one line into input
+        eprintln!("Failed to read input"); // error message if reading fails
+        return; // stop program early
+    } else { // success branch
+        eprintln!("\nInput: {}", input); // echo back what was read
+    } // end of read_line handling
 
-    let mut parts = input.split_whitespace();
-    let b = match parts.next().and_then(|s| s.parse::<i64>().ok()){
-        Some(b) => b,
-        None => return,
-    };
+    let mut parts = input.split_whitespace(); // split the line into space-separated tokens
+    let a = match parts.next().and_then(|s| s.parse::<i64>().ok()) { // parse the first token as i64
+        Some(a) => a, // parsing succeeded; use the value
+        None => return, // parsing failed; exit early
+    }; // end match for a
 
-    eprintln!("sum: {}", a + b);
-    eprintln!("diff: {}", a - b);
-    eprintln!("product: {}", a * b);
+    let mut parts = input.split_whitespace(); // split again (this restarts the iterator)
+    let b = match parts.next().and_then(|s| s.parse::<i64>().ok()) { // parses the first token again (logic bug)
+        Some(b) => b, // parsing succeeded; use the value
+        None => return, // parsing failed; exit early
+    }; // end match for b
 
-    return;
-}
+    eprintln!("sum: {}", a + b); // print the sum
+    eprintln!("diff: {}", a - b); // print the difference
+    eprintln!("product: {}", a * b); // print the product
+
+    return; // explicit return (not needed in Rust)
+} // end main
